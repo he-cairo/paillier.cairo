@@ -71,4 +71,21 @@ mod tests {
         let m_expected = 123;
         assert(paillier::decrypt(c, lambda, n, mu) == m_expected, 'incorrect m');
     }
+
+    #[test]
+    #[available_gas(151587300)]
+    fn test_addition() {
+        let a = 25;
+        let b = 88;
+        let c = a + b;
+        let r = 666;
+        let a_ = paillier::encrypt(25, r, n, g);
+        let b_ = paillier::encrypt(88, r, n, g);
+        // When two ciphertexts are multiplied, the result decrypts to the sum of their plaintexts
+        assert(a + b == paillier::decrypt(a_ * b_, lambda, n, mu), 'invalid homomorphic addition');
+
+        // Strange fact: a_ * b_ != c_, but both decrypt to a + b
+        let c_ = paillier::encrypt(a + b, r, n, g);
+        assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
+    }
 }
