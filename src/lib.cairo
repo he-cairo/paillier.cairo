@@ -2,18 +2,25 @@
 // https://blog.openmined.org/the-paillier-cryptosystem/
 
 mod paillier {
-    fn pow(x: u256, p: u256, mod_: u256) -> u256 {
-        let mut g_m = x;
-        let mut mi = 1;
-        loop {
-            if mi == p {
-                break;
-            }
-            g_m = (g_m * x) % mod_;
-            mi += 1;
-        };
+    mod utils {
+        fn pow(x: u256, p: u256, mod_: u256) -> u256 {
+            let mut g_m = x;
+            let mut mi = 1;
+            loop {
+                if mi == p {
+                    break;
+                }
+                g_m = (g_m * x) % mod_;
+                mi += 1;
+            };
 
-        g_m
+            g_m
+        }
+
+        // Define function  L(x) = ( x - 1 ) / n
+        fn L(x: u256, n: u256) -> u256 {
+            (x - 1) / n
+        }
     }
 
     fn encrypt(g: u256, m: u256, r: u256, n: u256) -> u256 {
@@ -22,7 +29,7 @@ mod paillier {
         assert(n < 0x10000000000000000, 'n should be < 2^64');
         assert(r < 0x10000000000000000, 'r should be < 2^64');
         let n2 = n * n;
-        (pow(g, m, n2) * pow(r, n, n2)) % n2
+        utils::pow(g, m, n2) * utils::pow(r, n, n2) % n2
     }
 
     fn decrypt() {}
