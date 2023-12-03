@@ -40,19 +40,20 @@ mod tests {
     use super::paillier;
     use debug::PrintTrait;
 
+    // These are toy values, with no real security
+    const p: u256 = 13;
+    const q: u256 = 17;
+    const n: u256 = 221;
+    const lambda: u256 = 48;
+    const g: u256 = 4886;
+    const mu: u256 = 15;
+
     #[test]
     #[available_gas(151587300)]
     fn test_encrpytion() {
-        let (p, q) = (13, 17);
-        let n = 221;
-        let gamma = 48;
-        let g = 4886;
-        let u = 15;
-
         let m = 123;
         let r = 666;
         let c_expected = 25889;
-        let c = paillier::encrypt(g, m, r, n);
-        assert(c == c_expected, 'incorrect c');
+        assert(paillier::encrypt(g, m, r, n) == c_expected, 'incorrect c');
     }
 }
