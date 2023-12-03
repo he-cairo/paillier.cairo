@@ -1,4 +1,4 @@
-# paillier.cairo
+# Paillier's homomorphic cryptosystem in Cairo
 
 Performs Paillier encryption and decryption in Cairo.
 
