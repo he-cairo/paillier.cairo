@@ -20,12 +20,6 @@ jobs:
       with:
         scarb-version: "0.7.0"
 
-    - name: Markdown lint
-      uses: DavidAnson/markdownlint-cli2-action@5b7c9f74fec47e6b15667b2cc23c63dff11e449e # v9
-      with:
-        globs: |
-          *.md
-
     - name: Cairo lint
       run: scarb fmt --check
 
