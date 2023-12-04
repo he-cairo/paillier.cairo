@@ -1,13 +1,13 @@
 use debug::PrintTrait;
 
 fn pow_cache(x: u256, p_upto: u256, mod_: u256) -> Span<u256> {
-    let p_upto_half = p_upto;
     let mut pow_cache = array![1, x];
     let mut pow = 1_u256;
     let mut x_last_pow = x;
     loop {
         pow = pow + pow;
-        if pow > p_upto_half {
+        // If we've exceeded the p_upto, we have all we need
+        if pow > p_upto {
             break;
         }
         x_last_pow = x_last_pow * x_last_pow % mod_;
@@ -50,7 +50,7 @@ mod tests {
 
     #[test]
     #[available_gas(1000000000)]
-    fn test_pow_cache() {
+    fn test_cache_pow() {
         let cache = pow_cache(3, 25, 0x100000000000000);
         assert(cache.len() == 6, 'incorrect cache len');
         assert(*cache[0] == 1, 'incorrect cache 0');
