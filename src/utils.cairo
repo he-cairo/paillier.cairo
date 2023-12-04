@@ -16,3 +16,16 @@ fn pow(x: u256, p: u256, mod_: u256) -> u256 {
 fn L(x: u256, n: u256) -> u256 {
     (x - 1) / n
 }
+
+#[cfg(test)]
+mod tests {
+    use debug::PrintTrait;
+    use super::{pow, L};
+
+    #[test]
+    #[available_gas(100000000)]
+    fn test_pow() {
+        assert(625 == pow(5, 4, 0x100000), 'incorrect 5**4');
+        assert(6561 == pow(3, 8, 0x100000), 'incorrect 3**8');
+    }
+}
