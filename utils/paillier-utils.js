@@ -1,6 +1,6 @@
 const paillierBigint = require("paillier-bigint");
 
-async function paillierTest() {
+async function paillierTest(m1, m2) {
     // (asynchronous) creation of a random private, public key pair for the Paillier cryptosystem
     const { publicKey, privateKey } = await paillierBigint.generateRandomKeys(
         64 // key size in bits
@@ -27,9 +27,6 @@ async function paillierTest() {
     // const publicKey = new paillierBigint.PublicKey(n, g)
     // const privateKey = new paillierBigint.PrivateKey(lambda, mu, publicKey)
 
-    const m1 = 12345678901234567890n;
-    const m2 = 5n;
-
     // encryption/decryption
     const c1 = publicKey.encrypt(m1);
 
@@ -45,4 +42,14 @@ async function paillierTest() {
 
     console.log("Encrypted sum - ", encryptedSum.toString());
 }
-paillierTest();
+
+const args = process.argv.slice(2);
+const m1 = BigInt(args[0]);
+const m2 = BigInt(args[1]);
+
+if (m1 === undefined || m2 === undefined) {
+    console.error("Please provide both m1 and m2 values");
+    process.exit(1);
+}
+
+paillierTest(m1, m2);
