@@ -23,7 +23,7 @@ mod utils {
 }
 
 fn encrypt(m: u256, r: u256, n: u256, g: u256) -> u256 {
-    assert(g < 0x10000000000000000, 'g should be < 2^64');
+    assert(g < 0x100000000000000000000000000000000, 'g should be < 2^128');
     assert(m < 0x10000000000000000, 'm should be < 2^64');
     assert(n < 0x10000000000000000, 'n should be < 2^64');
     assert(r < 0x10000000000000000, 'r should be < 2^64');
