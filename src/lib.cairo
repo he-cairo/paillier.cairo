@@ -3,6 +3,7 @@
 
 mod utils;
 
+// Generate hiding for the value from the public key
 fn encrypt(m: u256, r: u256, n: u256, g: u256) -> u256 {
     let n2 = n * n;
     assert(g < n2, 'g should be < n^2');
@@ -12,9 +13,10 @@ fn encrypt(m: u256, r: u256, n: u256, g: u256) -> u256 {
     utils::pow(g, m, n2) * utils::pow(r, n, n2) % n2
 }
 
+// Reveal hidings with private key
 fn decrypt(c: u256, lambda: u256, n: u256, mu: u256) -> u256 {
     let n2 = n * n;
-    assert(c < n2, 'c should be < 2^64');
+    assert(c < n2, 'c should be < n2');
     assert(n < 0x10000000000000000, 'n should be < 2^64');
     assert(mu < n, 'mu should be < n');
     utils::L(utils::pow(c, lambda, n2), n) * mu % n
