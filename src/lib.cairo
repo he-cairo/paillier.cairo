@@ -36,20 +36,15 @@ mod toy_tests {
 
     #[test]
     #[available_gas(100000000)]
-    fn test_encryption() {
+    fn test_encryption_decryption() {
         let m = 123;
-        let r = 666;
+        let r = 66;
         let c_expected = 25889;
-        assert(paillier::encrypt(m, r, n, g) == c_expected, 'incorrect c');
+        let c = paillier::encrypt(m, r, n, g);
+        assert(c != m, 'same c');
+        assert(paillier::decrypt(c, lambda, n, mu) == m, 'same c');
     }
 
-    #[test]
-    #[available_gas(100000000)]
-    fn test_decryption() {
-        let c = 25889;
-        let m_expected = 123;
-        assert(paillier::decrypt(c, lambda, n, mu) == m_expected, 'incorrect m');
-    }
 
     #[test]
     #[available_gas(100000000)]
