@@ -4,31 +4,29 @@
 mod utils;
 
 fn encrypt(m: u256, r: u256, n: u256, g: u256) -> u256 {
-    assert(g < 0x100000000000000000000000000000000, 'g should be < 2^128');
-    assert(m < 0x10000000000000000, 'm should be < 2^64');
-    assert(n < 0x10000000000000000, 'n should be < 2^64');
-    assert(r < 0x10000000000000000, 'r should be < 2^64');
     let n2 = n * n;
+    assert(g < n2, 'g should be < n^2');
+    assert(m < n, 'm should be < n');
+    assert(n < 0x10000000000000000, 'n should be < 2^64');
+    assert(r < n, 'r should be < n');
     utils::pow(g, m, n2) * utils::pow(r, n, n2) % n2
 }
 
 fn decrypt(c: u256, lambda: u256, n: u256, mu: u256) -> u256 {
-    assert(c < 0x10000000000000000, 'c should be < 2^64');
-    assert(lambda < 0x10000000000000000, 'lambda should be < 2^64');
-    assert(n < 0x10000000000000000, 'n should be < 2^64');
-    assert(mu < 0x10000000000000000, 'mu should be < 2^64');
     let n2 = n * n;
+    assert(c < n2, 'c should be < 2^64');
+    assert(n < 0x10000000000000000, 'n should be < 2^64');
+    assert(mu < n, 'mu should be < n');
     utils::L(utils::pow(c, lambda, n2), n) * mu % n
 }
 
 
 #[cfg(test)]
-mod tests {
+mod toy_tests {
     use debug::PrintTrait;
 
     // These are toy values, with no real security
-    const p: u256 = 13;
-    const q: u256 = 17;
+    // p and q are 13 and 17;
     const n: u256 = 221;
     const lambda: u256 = 48;
     const g: u256 = 4886;
