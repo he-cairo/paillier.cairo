@@ -22,6 +22,12 @@ fn decrypt(c: u256, lambda: u256, n: u256, mu: u256) -> u256 {
     utils::L(utils::pow(c, lambda, n2), n) * mu % n
 }
 
+// Performs addition on the hidings
+fn add(c1: u256, c2: u256, n: u256) -> u256 {
+    let n2 = n * n;
+    c1 * c2 % n2
+}
+
 
 #[cfg(test)]
 mod toy_tests {
@@ -45,18 +51,18 @@ mod toy_tests {
         assert(paillier::decrypt(c, lambda, n, mu) == m, 'same c');
     }
 
-
     #[test]
     #[available_gas(100000000)]
     fn test_addition() {
         let a = 25;
         let b = 88;
         let c = a + b;
-        let r = 666;
-        let a_ = paillier::encrypt(25, r, n, g); // = 0xb5a0
-        let b_ = paillier::encrypt(88, r, n, g); // = 0x32e3
+        let r = 66;
+        let a_ = paillier::encrypt(25, r, n, g);
+        let b_ = paillier::encrypt(88, r, n, g);
+        let c_ = paillier::add(a_, b_, n);
         // When two ciphertexts are multiplied, the result decrypts to the sum of their plaintexts
-        assert(a + b == paillier::decrypt(a_ * b_, lambda, n, mu), 'invalid homomorphic addition');
+        assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
 
         // Strange fact: a_ * b_ != c_, but both decrypt to a + b
         let c_ = paillier::encrypt(a + b, r, n, g); // = 0xbe1e
