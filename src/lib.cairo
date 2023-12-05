@@ -58,14 +58,10 @@ mod tests_toy {
         let b = 88;
         let c = a + b;
         let r = 66;
-        let a_ = paillier::encrypt(25, r, n, g);
-        let b_ = paillier::encrypt(88, r, n, g);
+        let a_ = paillier::encrypt(a, r, n, g);
+        let b_ = paillier::encrypt(b, r, n, g);
         let c_ = paillier::add(a_, b_, n);
         // When two ciphertexts are multiplied, the result decrypts to the sum of their plaintexts
-        assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
-
-        // Strange fact: a_ * b_ != c_, but both decrypt to a + b
-        let c_ = paillier::encrypt(a + b, r, n, g); // = 0xbe1e
         assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
     }
 }
@@ -75,7 +71,7 @@ mod tests_64bits {
     use debug::PrintTrait;
 
     // Public key params
-    const n: u256 = 14418544406081666363;
+    const n: u256 = 0xc818f5be9eb17d3b;
     const g: u256 = 193279223797371404001905592506928440800;
     // Private key params
     const lambda: u256 = 7209272198853933120;
@@ -99,17 +95,32 @@ mod tests_64bits {
         let b = 88;
         let c = a + b;
         let r = 66;
-        let a_ = paillier::encrypt(25, r, n, g);
-        let b_ = paillier::encrypt(88, r, n, g);
+        let a_ = paillier::encrypt(a, r, n, g);
+        // a_.low.print(); // 0x2a17018d0ca85295fe8c3a333befc2be
+        let b_ = paillier::encrypt(b, r, n, g);
+        // b_.low.print(); // 0x3e5db27c1cede9ebd604b81b329db4c3
         let c_ = paillier::add(a_, b_, n);
-        a_.low.print(); // 0x2a17018d0ca85295fe8c3a333befc2be
-        b_.low.print(); // 0x3e5db27c1cede9ebd604b81b329db4c3
-        c_.low.print(); // 0x546d56db02d4802f1f604d41e341ae34
-        // When two ciphertexts are multiplied, the result decrypts to the sum of their plaintexts
-        assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
+        // c_.low.print(); // 0x546d56db02d4802f1f604d41e341ae34
 
-        // Strange fact: a_ * b_ != c_, but both decrypt to a + b
-        let c_ = paillier::encrypt(a + b, r, n, g); // = 0xbe1e
+        // multiplication of two ciphertexts decrypts to the sum of their plaintexts
+        assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
+    }
+
+    #[test]
+    #[available_gas(100000000)]
+    fn test_huge_addition() {
+        let a = 0x1d35034ca8ca57;
+        let b = 0x2d36854ced30f1;
+        let c = a + b;
+        let r = 66;
+        let a_ = paillier::encrypt(a, r, n, g);
+        // a_.low.print(); // 0x293f08a498d9bc8371677f741fa08d97
+        let b_ = paillier::encrypt(b, r, n, g);
+        // b_.low.print(); // 0x674bdf867f1e68bf8b9af3ff8ecdaa31
+        let c_ = paillier::add(a_, b_, n);
+        // c_.low.print(); // 0x720d9178ebcc469e4e1dbd5f9b2e2fdc
+
+        // multiplication of two ciphertexts decrypts to the sum of their plaintexts
         assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
     }
 }
