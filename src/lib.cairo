@@ -30,7 +30,7 @@ fn add(c1: u256, c2: u256, n: u256) -> u256 {
 
 
 #[cfg(test)]
-mod toy_tests {
+mod tests_toy {
     use debug::PrintTrait;
 
     // These are toy values, with no real security
@@ -61,6 +61,50 @@ mod toy_tests {
         let a_ = paillier::encrypt(25, r, n, g);
         let b_ = paillier::encrypt(88, r, n, g);
         let c_ = paillier::add(a_, b_, n);
+        // When two ciphertexts are multiplied, the result decrypts to the sum of their plaintexts
+        assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
+
+        // Strange fact: a_ * b_ != c_, but both decrypt to a + b
+        let c_ = paillier::encrypt(a + b, r, n, g); // = 0xbe1e
+        assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
+    }
+}
+
+#[cfg(test)]
+mod tests_64bits {
+    use debug::PrintTrait;
+
+    // Public key params
+    const n: u256 = 14418544406081666363;
+    const g: u256 = 193279223797371404001905592506928440800;
+    // Private key params
+    const lambda: u256 = 7209272198853933120;
+    const mu: u256 = 8334459261319212077;
+
+    #[test]
+    #[available_gas(100000000)]
+    fn test_encryption_decryption() {
+        let m = 123;
+        let r = 66;
+        let c_expected = 25889;
+        let c = paillier::encrypt(m, r, n, g);
+        assert(c != m, 'same c');
+        assert(paillier::decrypt(c, lambda, n, mu) == m, 'same c');
+    }
+
+    #[test]
+    #[available_gas(100000000)]
+    fn test_addition() {
+        let a = 25;
+        let b = 88;
+        let c = a + b;
+        let r = 66;
+        let a_ = paillier::encrypt(25, r, n, g);
+        let b_ = paillier::encrypt(88, r, n, g);
+        let c_ = paillier::add(a_, b_, n);
+        a_.low.print(); // 0x2a17018d0ca85295fe8c3a333befc2be
+        b_.low.print(); // 0x3e5db27c1cede9ebd604b81b329db4c3
+        c_.low.print(); // 0x546d56db02d4802f1f604d41e341ae34
         // When two ciphertexts are multiplied, the result decrypts to the sum of their plaintexts
         assert(a + b == paillier::decrypt(c_, lambda, n, mu), 'invalid homomorphic addition');
 
