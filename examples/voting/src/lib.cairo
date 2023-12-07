@@ -1,28 +1,18 @@
-fn main() -> felt252 {
-    fib(16)
+#[starknet::interface]
+trait IPallierVoting<T> {
+    // Make a proposal
+    fn proposal(self: @T, proposal: Proposal);
+    // Make a vote
+    fn vote(ref self: T, vote: Vote);
 }
 
-fn fib(mut n: felt252) -> felt252 {
-    let mut a: felt252 = 0;
-    let mut b: felt252 = 1;
-    loop {
-        if n == 0 {
-            break a;
-        }
-        n = n - 1;
-        let temp = b;
-        b = a + b;
-        a = temp;
-    }
+struct Proposal {
+    id: u64,
+    program_hash: u256,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::fib;
-
-    #[test]
-    #[available_gas(100000)]
-    fn it_works() {
-        assert(fib(16) == 987, 'it works!');
-    }
+#[derive(Store)]
+struct Vote {
+    options: u8,
+    program_hash: u256,
 }
