@@ -2,5 +2,12 @@
 version = 1
 
 [[package]]
+name = "paillier"
+version = "0.1.0"
+
+[[package]]
 name = "pallier_voting"
 version = "0.1.0"
+dependencies = [
+ "paillier",
+]

@@ -11,7 +11,8 @@ trait IPallierVoting<T> {
 #[derive(Serde, Copy, Drop, starknet::Store)]
 struct Proposal {
     id: u64,
-    program_hash: u256,
+    program_hash: u256, // Cairo program hash for proofs
+    n: u256, // Homomorphic Public key
     y_votes: u128,
     n_votes: u128,
 }
@@ -33,6 +34,10 @@ mod PallierVoting {
         self.governor.write(get_caller_address());
     }
 
+    fn mk256(low: u128) -> u256 {
+        u256 { low, high: 0 }
+    }
+
     #[abi(embed_v0)]
     impl VotingImpl of super::IPallierVoting<ContractState> {
         fn proposal(ref self: ContractState, proposal: super::Proposal) {
@@ -43,8 +48,12 @@ mod PallierVoting {
         }
         fn vote(ref self: ContractState, proposal_id: u64, y_vote: u128, n_vote: u128,) {
             let mut proposal = self.proposals.read(proposal_id);
-            proposal.n_votes += n_vote; // votes are 64 bits so won't overflow
-            proposal.y_votes += y_vote; // votes are 64 bits so won't overflow
+            proposal
+                .n_votes += paillier::add(mk256(proposal.n_votes), mk256(n_vote), proposal.n)
+                .low; // votes are 64 bits so won't overflow
+            proposal
+                .y_votes += paillier::add(mk256(proposal.y_votes), mk256(y_vote), proposal.n)
+                .low; // votes are 64 bits so won't overflow
             self.proposals.write(proposal_id, proposal);
         }
         fn get_proposal(self: @ContractState, proposal_id: u64) -> super::Proposal {
