@@ -16,7 +16,7 @@ mod tests {
     #[test]
     #[available_gas(10000000000)]
     fn test_flow() {
-        let calldata = array![];
+        let calldata = array![0x0];
         let deploy_call = deploy_syscall(
             PallierVoting::TEST_CLASS_HASH.try_into().unwrap(), 0, calldata.span(), false
         );
